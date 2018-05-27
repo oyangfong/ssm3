@@ -1,0 +1,166 @@
+var userCode=null;
+var userName = null;
+var gender = null;
+var phone = null;
+
+var userState=null;
+var userRole = null;
+var institution=null;
+var email=null;
+
+var phone=null;
+var teachingFeature=null;
+var address=null;
+var a_idPicPath=null;
+
+var summery=null;
+var saveBtn = null;
+var backBtn = null;
+
+$(function(){
+	userCode = $("#userCode");
+	userName = $("#userName");
+	gender = $("#gender");
+	userState = $("#userState");
+
+	userRole = $("#userRole");
+	institution = $("#institution");
+	email = $("#email");
+	phone = $("#phone");
+
+	teachingFeature = $("#teachingFeature");
+	address = $("#address");
+	a_idPicPath = $("#a_idPicPath");
+	summery = $("#summery");
+	
+	saveBtn = $("#save");
+	backBtn = $("#back");
+	
+	userState.next().next().html("*");
+	gender.next().next().html("*");
+	institution.next().html("*");
+	userRole.next().html("*");
+  
+     //表单非空验证规则及提示信息设置
+    $("#userForm").validate({
+      rules:{
+      "userCode": {required: true},
+      "userName":{required: true},
+      
+      "userRole":{required: true},
+      "institution":{required: true},
+      "email":{required: true},
+      "phone":{required: true},
+      "teachingFeature":{required: true},
+      "address":{required: true},
+      "summery":{required: true}
+      },
+      messages:{  
+       "userCode":{required: "<font color='red'>账号不能为空</font>"},
+       "userName":{required: "<font color='red'>姓名不能为空</font>"},
+       
+
+       "userRole":{required: "<font color='red'>职称不能为空</font>"},
+       "institution":{required: "<font color='red'>事业单位不能为空</font>"},
+       "email":{required: "<font color='red'>邮箱不能为空</font>"},
+       "phone":{required: "<font color='red'>电话不能为空</font>"},
+
+       "teachingFeature":{required: "<font color='red'>授课特点不能为空</font>"},
+       "address":{required: "<font color='red'>详细地址不能为空</font>"},
+       "summery":{required: "<font color='red'>资历简介不能为空</font>"}
+      }   
+    });
+	
+	
+	userName.on("focus",function(){
+		validateTip(userName.next(),{"color":"#666666"},"* 用户名长度必须是大于1小于10的字符",false);
+	}).on("blur",function(){
+		if(userName.val() != null && userName.val().length > 1 
+				&& userName.val().length < 10){
+			validateTip(userName.next(),{"color":"green"},imgYes,true);
+		}else{
+			validateTip(userName.next(),{"color":"red"},imgNo+" 用户名输入的不符合规范，请重新输入",false);
+		}
+		
+	});
+	
+/*	birthday.on("focus",function(){
+		validateTip(birthday.next(),{"color":"#666666"},"* 点击输入框，选择日期",false);
+	}).on("blur",function(){
+		if(birthday.val() != null && birthday.val() != ""){
+			validateTip(birthday.next(),{"color":"green"},imgYes,true);
+		}else{
+			validateTip(birthday.next(),{"color":"red"},imgNo + " 选择的日期不正确,请重新输入",false);
+		}
+	});*/
+	//  
+	
+	email.on("focus",function(){
+		validateTip(email.next(),{"color":"#666666"},"* 请输入电子邮箱",false);
+	}).on("blur",function(){
+		var patrn=/^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+		if(email.val().match(patrn)){
+			validateTip(email.next(),{"color":"green"},imgYes,true);
+		}else{
+			validateTip(email.next(),{"color":"red"},imgNo + " 您输入的电子邮箱格式不正确",false);
+		}
+	});
+	
+	phone.on("focus",function(){
+		validateTip(phone.next(),{"color":"#666666"},"* 请输入手机号",false);
+	}).on("blur",function(){
+		var patrn=/^(13[0-9]|15[0-9]|18[0-9])\d{8}$/;
+		if(phone.val().match(patrn)){
+			validateTip(phone.next(),{"color":"green"},imgYes,true);
+		}else{
+			validateTip(phone.next(),{"color":"red"},imgNo + " 您输入的手机号格式不正确",false);
+		}
+	});
+	
+	
+	userRole.on("focus",function(){
+		validateTip(userRole.next(),{"color":"#666666"},"* 请选择用户角色",false);
+	}).on("blur",function(){
+		if(userRole.val() != null){
+			validateTip(userRole.next(),{"color":"green"},imgYes,true);
+		}else{
+			validateTip(userRole.next(),{"color":"red"},imgNo+" 请重新选择用户角色",false);
+		}
+		
+	});
+	
+	saveBtn.on("click",function(){
+		/*userName.blur();
+		phone.blur();
+		birthday.blur();
+		userRole.blur();
+		if(userName.attr("validateStatus") == "true" 
+			&& phone.attr("validateStatus") == "true"
+			&& birthday.attr("validateStatus") == "true"
+			&& userRole.attr("validateStatus") == "true"){
+			if(confirm("是否确认要提交数据？")){
+				$("#userForm").submit();
+			}
+		}*/
+		
+		if(confirm("是否确认要提交数据？")){
+			 //获取ckeditor值的方法
+			 //var content =  CKEDITOR.instances.myeditor.getData();
+			 //提交前，设置资历简介textarea域的值
+			 CKEDITOR.instances.myeditor.updateElement(); //将ckeditor值更新至textarea中
+			$("#userForm").submit();
+		}
+	});
+	
+	backBtn.on("click",function(){
+		if(referer != undefined 
+			&& null != referer 
+			&& "" != referer
+			&& "null" != referer
+			&& referer.length > 4){
+		 window.location.href = referer;
+		}else{
+			history.back(-1);
+		}
+	});
+});

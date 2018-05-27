@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.mapper.user.UserMapper">
+
+	<!--** 用户登录 /检测账户是否已存在** -->
+	<select id="getUserByUserCode" resultType="User">
+		select * from tbl_teacher
+		<where>
+		  <if test="userCode!=null and userCode!=''">
+		    and usercode=#{userCode}
+		  </if>
+		  <if test="userPassword!=null and userPassword!=''">
+		    and userpassword=#{userPassword}
+		  </if>
+		</where>
+		
+	</select>
+
+
+	<select id="findAll" resultType="User">
+		select * from tbl_teacher
+	</select>
+
+	<!-- 分页查询正常状态下的用户信息 -->
+	<select id="getUserListByPage" resultType="User">
+		select * from
+		tbl_teacher
+		where userState=1
+		limit #{from},#{pageSize}
+	</select>
+
+	<!--** 动态查询，获取正常状态下的分页用户信息 ** -->
+	<select id="getUserListByPageWithCondition" parameterType="map"
+		resultType="User">
+		select * from tbl_teacher
+		where userState=1
+		<if test="queryUserCode!=null and queryUserCode!=''">
+			and userCode like CONCAT('%',#{queryUserCode},'%')
+		</if>
+		<if test="queryUserName!=null and queryUserName!=''">
+			and userName like CONCAT('%',#{queryUserName},'%')
+		</if>
+		limit #{from},#{pageSize}
+	</select>
+
+	<!-- 获取总记录数 -->
+	<select id="getTotalCount" resultType="int">
+		select count(1) from tbl_teacher
+		where userState=1
+	</select>
+
+	<!--** 获取满足查询条件的记录数 ** -->
+	<select id="getTotalCountWithCondition" resultType="int">
+		select count(1) from tbl_teacher
+		where userState=1
+		<if test="queryUserCode!=null and queryUserCode!=''">
+			and userCode like CONCAT('%',#{queryUserCode},'%')
+		</if>
+		<if test="queryUserName!=null and queryUserName!=''">
+			and userName like CONCAT('%',#{queryUserName},'%')
+		</if>
+	</select>
+
+	<select id="getUserList" resultMap="userResultMap">
+		SELECT u.*,r.id
+		r_id,r.`roleCode`,r.`roleName`
+		FROM tbl_teacher u, tbl_role r
+		WHERE
+		u.`userRole`=r.`id`
+	</select>
+
+	<resultMap type="User" id="userResultMap">
+		<id property="id" column="id" />
+		<result property="userCode" column="userCode" />
+		<result property="userName" column="userName" />
+		<result property="userPassword" column="userPassword" />
+		<association property="role" javaType="Role">
+			<id property="id" column="r_id" />
+			<result property="roleCode" column="roleCode" />
+			<result property="roleName" column="roleName" />
+		</association>
+	</resultMap>
+
+
+    <!--** 根据ID查询用户信息  **-->
+	<select id="selectById" resultType="User" parameterType="int">
+		select
+		u.*
+		from tbl_teacher u
+		where u.id=#{id}
+	</select>
+
+    <!--** 获取事业单位列表 **-->
+    <select id="getInstitutionList" resultType="string">
+      SELECT DISTINCT institution FROM tbl_teacher
+    </select>
+
+
+	<!--** if+set **-->
+	<update id="update" parameterType="User">
+		update tbl_teacher
+		<trim prefix="set" suffixOverrides="," suffix="where id=#{id}">
+			<if test="userCode!=null">userCode=#{userCode},</if>
+			<if test="userName!=null">userName=#{userName},</if>
+			<if test="userPassword!=null">userPassword=#{userPassword},</if>
+			<if test="gender!=null">gender=#{gender},</if>
+			<if test="birthday!=null">birthday=#{birthday},</if>
+			
+			<if test="userRole!=null">userRole=#{userRole},</if>
+			<if test="job!=null">job=#{job},</if>
+			<if test="institution!=null">institution=#{institution},</if>
+			<if test="phone!=null">phone=#{phone},</if>
+			<if test="email!=null">email=#{email},</if>
+			
+			<if test="teachingFeature!=null">teachingFeature=#{teachingFeature},</if>
+			<if test="address!=null">address=#{address},</if>
+			<if test="idPicPath!=null">idPicPath=#{idPicPath},</if>
+			<if test="summery!=null">summery=#{summery},</if>
+		</trim>
+	</update>
+
+	<!--** 禁用用户 -更改状态值 userState : 0 ** -->
+	<update id="updateState">
+		update tbl_teacher set userState=0
+		where id in
+		<foreach collection="array" item="ids" open="(" separator=","
+			close=")">
+			#{ids}
+		</foreach>
+	</update>
+
+
+	<!-- if+set -->
+	<update id="modify" parameterType="User">
+		update tbl_teacher
+		<set>
+			<if test="userCode!=null">userCode=#{userCode},</if>
+			<if test="userName!=null">userName=#{userName},</if>
+			<if test="userPassword!=null">userPassword=#{userPassword},</if>
+			<if test="userRole!=null">userRole=#{userRole},</if>
+		</set>
+		where id=#{id}
+	</update>
+
+
+	<update id="modify2" parameterType="User">
+		update tbl_teacher
+		<trim prefix="set" suffix="where id=#{id}" suffixOverrides=",">
+			<if test="userCode!=null">userCode=#{userCode},</if>
+			<if test="userName!=null">userName=#{userName},</if>
+			<if test="userPassword!=null">userPassword=#{userPassword},</if>
+			<if test="userRole!=null">userRole=#{userRole},</if>
+		</trim>
+
+	</update>
+
+
+
+
+	<select id="findAllByPageIndex" resultType="User">
+		select * from tbl_teacher
+		limit #{from},#{pageSize}
+	</select>
+
+<!-- /****************************************/ -->
+    <!-- 增加及删除 -->
+    
+    <delete id="delete" parameterType="int">
+       delete from tbl_teacher where id=#{id}
+    </delete>
+    
+    
+     <insert id="add" parameterType="User" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into tbl_teacher(userCode,userName,userPassword,gender,userState,
+		                     birthday,phone,userRole,job,institution,email,
+		                     teachingFeature,address,idPicPath,creationDate,createdBy)
+		values(#{userCode},#{userName},#{userPassword},#{gender},#{userState},
+		        #{birthday},#{phone},#{userRole},#{job},#{institution},#{email},
+		        #{teachingFeature},#{address},#{idPicPath},#{creationDate},#{createdBy})
+	</insert>
+<!-- /****************************************/ -->
+</mapper>

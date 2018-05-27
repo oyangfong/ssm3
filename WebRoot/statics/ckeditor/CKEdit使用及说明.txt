@@ -1,0 +1,69 @@
+一、下载CKEditor
+       1. 直接下载地址。当前最新版本号为3.5：
+       http://download.cksource.com/CKEditor/CKEditor/CKEditor%203.5/ckeditor_3.5.zip
+
+       2. 或者可直接到官方站点下载：
+       http://ckeditor.com/download
+二、安装CKEditor
+       解压ckeditor_3.5.zip，得到ckeditor目录，将ckeditor整个目录拷贝到项目project的根目录下，即WebRoot下 
+三、验证CKEditor是否成功安装
+
+       部署执行项目，訪问: http://localhost/项目名称/ckeditor/_samples/index.html
+
+       则可出现 “CKEditor Samples List” 的Demo页面，说明CKeditor已成功安装
+
+四、应用CKEditor
+       1. 导入JS文件
+            <script type="text/javascript" src="<%=request.getContextPath()%>/ckeditor/ckeditor.js"></script>
+       2. 创建和使用CKEditor
+ 
+		Java代码  收藏代码
+		<textarea class="ckeditor" cols="80" id="content" name="content" rows="10">  
+			  CKEditor Test......(此处的内容会在编辑器中显示)  
+		</textarea>  
+		  
+		<script type="text/javascript">  
+		//<![CDATA[  
+			CKEDITOR.replace('content',{toolbar:'Full', skin : 'kama'});  
+		//]]>  
+		</script>  
+ 
+        说明：
+
+         1) textarea属性值 name="content": 名字可任意定义。但必须与以下的CKEDITOR.replace('content');匹配
+         2) CKEDITOR.replace('content');是最主要的写法。表示使用CKEditor的JavaScript API创建的编辑器实例，
+			替换上面的textarea。
+
+			若要为CKEditor添加一些属性设置。则其属性必须写在{}花括号内，
+
+			如上{toolbar:'Full', skin : 'kama'}，
+
+			详细的属性网上非常多文章均可搜索到，这里不累述了。
+			
+        3) 上面的textarea后面的“CKEDITOR.replace('content');”脚本也能够写在<head></head>标签内
+			Java代码  收藏代码
+			<script type="text/javascript">  
+				window.onload = function(){  
+					CKEDITOR.replace('content');  
+				}  
+			</script>  
+ 
+五、获取编辑器里的数据
+
+      有时在提交表单时，须要推断下编辑器里的内容是否为空。这时可使用CKEditor的JavaScript API：
+
+      CKEDITOR.instances.content.getData()      
+
+		Java代码  收藏代码
+		function test() {  
+			var editor_data = CKEDITOR.instances.content.getData();  
+			if(editor_data==null || editor_data==""){  
+				alert("请填写内容！
+		");  
+
+				return false;  
+			}  
+		}  
+       注意：假设你在编辑器里打了一堆的空格，内容是不为空的，由于编辑器会把你打的空格都转换成&nbsp;
+
+补充说明：假设你的项目中使用struts2等框架，也可依据上面textarea的属性name="content"来获取编辑器里的内容，最好使用BLOB来存储。
